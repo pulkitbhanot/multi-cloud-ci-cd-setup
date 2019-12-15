@@ -1,0 +1,257 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: AWS CloudFormation to create EC2 machine.  **WARNING** This template creates an Amazon EC2 instance. You will  be billed for the  AWS resources used if you create a stack from this template.
+
+Metadata: 
+  AWS::CloudFormation::Interface: 
+    ParameterGroups: 
+      - 
+        Label: 
+          default: "Admin User"
+        Parameters: 
+          - ADMINUserName
+          - DefaultPublicKey
+          - PulkitPublicKey
+          - AndrewPublicKey
+          - AbidPublicKey
+      - 
+        Label: 
+          default: "EC2 Spec"
+        Parameters: 
+          - AMI
+          - VPCId
+          - Subnet          
+          - EC2Type
+          - HostName 
+
+    ParameterLabels: 
+
+      ADMINUserName: 
+        default: "Admin User Name"
+      DefaultPublicKey:
+        default: "Default Public Key"        
+      PulkitPublicKey:
+        default: "Pulkit Public Key"
+      AndrewPublicKey:
+        default: "Andrew Public Key" 
+      AbidPublicKey:
+        default: "Abid Public Key"                          
+      IAMRole:
+        default: ""
+      AMI:
+        default: "AMI"
+      VPCId:
+        default: "VPC where the subnet belongs to"
+      Subnet:
+        default: "Subnet to host the EC2"
+      EC2Type:
+        default: "Instance Type"
+      HostName:
+        default: "Hostname?"
+
+Parameters:
+  
+  ADMINUserName:
+    Type: String
+    Default: e91user
+  
+  DefaultPublicKey:
+    Description: default to a generated public key
+    Type: String
+    Default: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC61HSwegJkMDSqYJRe6RuubC8XEJo+ymwx/EGrv0yg6YBQ6YeZfAeywUrqv8BzeKtNA5EOQY5zO2JeXkxDktHp/D4q4+P9Q9xSa4CLy7W1PyvMr9/Yvqc5DO8qUPDTAylTmyInkPGKaBIu1enLfJT5K48fNa87becYZFaKpJA5SsNhVkgAitc8bz7QrHs0fR0U2di0Ghps4KElTHyeMqYPJqDbb7XMvVGjPM+FedQTeV/girZOjtBMY1vALZSGG2xzvdEnFnT3OWt8hB6mPmQzxqGtdTPml/llfck7951ZIO5tOp/NtGcfK7CsVERuIuRU59pil7myVMPAlsKbOas3
+
+  PulkitPublicKey:
+    Description: default to a Pulkit public key
+    Type: String
+    Default: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDA360+Cy5tW675l/EuvPoJXJHvzvy6ZBiztzlMwgarZSw6xXmHPmh8wHkbd2pHMRNjDr9Claxg6UxXu0CUKiiF7TDFxO3pC3O+fD5Y/e/WY1vMdvLq2qBYkkObr0aDrv356gjqrvARc6pYAap/faOUqwg4iEk4tgL6a1jptjOJIUVRchRT1XxPbHSvJDCIaQOYJyn06oFq14KHQk75/gxKjzQM6rQTqHcINgIBg14waa1vF6Vmdior4kGuydr62wbPlWqavVZblx/BeE1ugAeTXCs52Fcj2Z3xq0Zw9wGZKpoZt1rUhothlfQV9jp67lwp3BOE4qP9MDlkVuEkQMfL
+
+  AndrewPublicKey:
+    Description: default to a Andrew public key
+    Type: String
+    Default: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC99lJBOmgh4TjUYoaREscz0406v86m01Fbi5/GDsD2g1s1Wmhp/IxOx3ndsYcaTfj/1+6fACqwdT5/99r9SJl57XPyAS377rT8vJQkjOnSXoKNCnBmwh8HT4eJ9xU2C9nEHkOqchxp4KoCGhW9MtDhrPB9UYc7YR5pzjcgVTQx4wWO2rBbvfp3wyjmoRoaOQM1iEP0THyR36V8nZVPNH2LNqPryNiUbbIJLriiaPQdY2tsnYHBFcChpubntWkzs+K5woG3Jf5kzauUBBpweXpn7zWm0SxmMklm7jr5OboIRsm+NOTlWw4Xk2KdCD+oUImURA+TNKppefMIgvN3pHAJ
+
+  AbidPublicKey:
+    Description: default to a Abid public key
+    Type: String
+    Default: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHrKM6Qvag+Snemu2v6SuxUyq9iIXQvY9PB5gCm8rW45gkAh3xTNGoB7t51X4NPvU5Y7YMxWBUQJXwPUXOhUUYTfMZ5cI9oaIijyLNLYwWPVtegMwwlcVYBzkES0P0mAtR6qHPaVE6Lj2vjWCkQwMLsYbsquzqezszwuv1DQRzzRkOiXE39h9IkhW3BduQaNrZQkJZJ2H0cpZkPXOfy631DQ1XuQ/UKT0U32HUA7Flhzrek8D1Xps/DE0AkxtIV0N9FEQHOO3bLKLE47RiUV4EfRSuroR+UWi+WQEnZfLtUNO5Xe1jhAartqxakN1D+/4pA/2ZUXect8Rw/QHcrxmT
+  
+  VPCId:
+    Description: VPC of the launcher and its security group
+    Type: 'AWS::EC2::VPC::Id'
+    ConstraintDescription: must be a VPC where the SG and the launcher reside
+
+  Subnet:
+    Description: Subnet to host the EC2s 
+    Type: 'AWS::EC2::Subnet::Id'
+    Default: 'subnet-'
+    ConstraintDescription: must be a subnet where this machine reside
+   
+  EC2Type:
+    Description: instance type
+    Type: String
+    Default: t2.micro
+    ConstraintDescription: must be a valid EC2 instance type.
+  
+  AMI:
+    Description: AMI 
+    Type: String
+    Default: ami-0e1fe1fee170f9a98
+
+  HostName:
+    Description: What do you want the host name of your EC2 
+    Type: String
+    Default: .cscie91.harvard.edu
+  
+
+Resources:
+ 
+  EC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: !Ref AMI
+      InstanceType: !Ref EC2Type
+      SubnetId: !Ref Subnet
+      SecurityGroupIds: 
+        - !Ref WEBINTERNETSSH 
+      Tags:
+        - 
+          Key: Name
+          Value: !Sub ${AWS::StackName}
+      UserData:
+        Fn::Base64:
+          Fn::Sub:
+            - |
+              #!/bin/bash -xe
+              adduser ${ADMINUSERNAME}
+              echo ${ADMINUSERNAME} 'ALL=(ALL) NOPASSWD:ALL'>>/etc/sudoers.d/${ADMINUSERNAME}
+              mkdir /home/${ADMINUSERNAME}/.ssh
+
+              cat > /home/${ADMINUSERNAME}/.ssh/id_rsa << EOF
+              -----BEGIN OPENSSH PRIVATE KEY-----
+              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
+              -----END OPENSSH PRIVATE KEY-----
+              EOF
+
+
+              echo ${DEFAULTPUBLICKEY} >> /home/${ADMINUSERNAME}/.ssh/id_rsa.pub
+              echo ${DEFAULTPUBLICKEY} >> /home/${ADMINUSERNAME}/.ssh/authorized_keys
+              echo ${PULKITPUBLICKEY} >> /home/${ADMINUSERNAME}/.ssh/authorized_keys
+              echo ${ANDREWPUBLICKEY} >> /home/${ADMINUSERNAME}/.ssh/authorized_keys
+              echo ${ABIDPUBLICKEY} >> /home/${ADMINUSERNAME}/.ssh/authorized_keys
+              chown -R ${ADMINUSERNAME}.${ADMINUSERNAME} /home/${ADMINUSERNAME}/.ssh
+              chmod 700 /home/${ADMINUSERNAME}/.ssh
+              chmod 600 /home/${ADMINUSERNAME}/.ssh/authorized_keys
+              hostnamectl set-hostname  ${HOSTNAME} --static
+               
+              mkdir -p /root/.ssh
+              chmod 700 /root/.ssh
+
+              cat > /root/.ssh/id_rsa << EOF
+              -----BEGIN OPENSSH PRIVATE KEY-----
+              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
+              -----END OPENSSH PRIVATE KEY-----
+              EOF
+
+
+              chmod 600  /root/.ssh/id_rsa 
+              echo ${DEFAULTPUBLICKEY} >> /root/.ssh/authorized_keys
+              chmod 600 /root/.ssh/authorized_keys
+              chown -R root.root /root/.ssh
+              
+            - ADMINUSERNAME: !Ref ADMINUserName
+              DEFAULTPUBLICKEY: !Ref DefaultPublicKey
+              PULKITPUBLICKEY: !Ref PulkitPublicKey
+              ANDREWPUBLICKEY: !Ref AndrewPublicKey
+              ABIDPUBLICKEY: !Ref AbidPublicKey
+              HOSTNAME: !Ref HostName
+              
+  WEBINTERNETSSH:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupName: cscie91-final-project
+      VpcId: !Ref VPCId       
+      GroupDescription: Internet access to 22,8080, 8443, 80 and 443 
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8080'
+          ToPort: '8080'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8443'
+          ToPort: '8443'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0  
+        - IpProtocol: tcp
+          FromPort: '443'
+          ToPort: '443'
+          CidrIp: 0.0.0.0/0
+Outputs:
+  InstanceId:
+    Description: EC2 ID
+    Value: !Ref EC2Instance
+  
+  LocalIP:
+    Description: Local Ip
+    Value: !GetAtt EC2Instance.PrivateIp
+  
+  PublicIP:
+    Description: Public Ip
+    Value: !GetAtt EC2Instance.PublicIp
+
+
+
