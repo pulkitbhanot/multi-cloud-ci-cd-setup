@@ -1,6 +1,3 @@
-# Note to self - confirmed this worked on 12/5 by manually creating a VM (test-jenkins-startup)
-# and adding this as the startup script
-
 adduser e91user
 echo e91user 'ALL=(ALL) NOPASSWD:ALL'>>/etc/sudoers.d/e91user
 mkdir /home/e91user/.ssh
@@ -63,5 +60,6 @@ yum install git -y
 yum install ansible -y
 updatedb
 rm -fr /etc/ansible
+
 # Clone our repo into this machine to have access to the ansible setup
 git clone git@code.harvard.edu:pub009/cscie91-final-project.git /etc/ansible
