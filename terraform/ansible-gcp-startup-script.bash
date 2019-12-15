@@ -61,5 +61,7 @@ yum install ansible -y
 updatedb
 rm -fr /etc/ansible
 
+# Become root user to clone repo
+sudo su -
 # Clone our repo into this machine to have access to the ansible setup
 git clone git@code.harvard.edu:pub009/cscie91-final-project.git /etc/ansible
