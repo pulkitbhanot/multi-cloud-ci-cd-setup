@@ -15,3 +15,7 @@
   **ansible** contains ansible configurations and playbooks to configure jenkins machine
   
   **terraform** contains terraform templates for ansible server
+
+  **cloudformation** contains the yaml files for launching jenkins, dev and staging server on AWS.
+ 
+  **jenkins** folder contians the pipeline to deploy to the dev/staging and production deployment as doxcker containers.
