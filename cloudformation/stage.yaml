@@ -1,0 +1,155 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: AWS CloudFormation to create EC2 machine.  **WARNING** This template creates an Amazon EC2 instance. You will  be billed for the  AWS resources used if you create a stack from this template.
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Admin User"
+        Parameters:
+          - ADMINUserName
+          - ADMINPublicKey
+      - Label:
+          default: "EC2 Spec"
+        Parameters:
+          - AMI
+          - IAMRole
+          - EC2Type
+
+    ParameterLabels:
+      ADMINUserName:
+        default: "Admin User Name"
+      ADMINPublicKey:
+        default: "Admin Public Key"
+
+      IAMRole:
+        default: ""
+      AMI:
+        default: "AMI"
+      EC2Type:
+        default: "Instance Type"
+
+Parameters:
+  ADMINUserName:
+    Type: String
+    Default: e91user
+
+  ADMINPublicKey:
+    Description: default to e91user
+    Type: String
+    Default: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHrKM6Qvag+Snemu2v6SuxUyq9iIXQvY9PB5gCm8rW45gkAh3xTNGoB7t51X4NPvU5Y7YMxWBUQJXwPUXOhUUYTfMZ5cI9oaIijyLNLYwWPVtegMwwlcVYBzkES0P0mAtR6qHPaVE6Lj2vjWCkQwMLsYbsquzqezszwuv1DQRzzRkOiXE39h9IkhW3BduQaNrZQkJZJ2H0cpZkPXOfy631DQ1XuQ/UKT0U32HUA7Flhzrek8D1Xps/DE0AkxtIV0N9FEQHOO3bLKLE47RiUV4EfRSuroR+UWi+WQEnZfLtUNO5Xe1jhAartqxakN1D+/4pA/2ZUXect8Rw/QHcrxmT abid@Abids-MBP
+    
+  Subnet:
+    Description: Subnet to host the EC2s
+    Type: "AWS::EC2::Subnet::Id"
+    Default: "subnet-02604598628e889ed"
+    ConstraintDescription: must be a subnet where this machine reside
+
+  SecurityGroup:
+    Description: Name of security groups
+    Type: "List<AWS::EC2::SecurityGroup::Id>"
+    Default: "sg-00a67e1c39acb98ae"
+
+  EC2Type:
+    Description: instance type
+    Type: String
+    Default: t2.micro
+    ConstraintDescription: must be a valid EC2 instance type.
+
+  AMI:
+    Description: AMI
+    Type: String
+    Default: ami-0e1fe1fee170f9a98
+
+  IAMRole:
+    Description: Insert the name of the profile role only, no arn accepted
+    Type: String
+    Default: ""
+
+Resources:
+  EC2Instance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      ImageId: !Ref AMI
+      InstanceType: !Ref EC2Type
+      SubnetId: !Ref Subnet
+      SecurityGroupIds: !Ref SecurityGroup
+      #DisableApiTermination: true
+      IamInstanceProfile: !Ref IAMRole
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}
+      UserData:
+        Fn::Base64:
+          Fn::Sub:
+            - |
+              #!/bin/bash -xe
+              adduser ${ADMINUSERNAME}
+              echo ${ADMINUSERNAME} 'ALL=(ALL) NOPASSWD:ALL'>>/etc/sudoers.d/${ADMINUSERNAME}
+              mkdir /home/${ADMINUSERNAME}/.ssh
+              echo ${ADMINSSHKEY} > /home/${ADMINUSERNAME}/.ssh/authorized_keys
+              chown -R ${ADMINUSERNAME}.${ADMINUSERNAME} /home/${ADMINUSERNAME}/.ssh
+              chmod 700 /home/${ADMINUSERNAME}/.ssh
+              chmod 600 /home/${ADMINUSERNAME}/.ssh/authorized_keys
+              mkdir -p /root/.ssh
+              chmod 700 /root/.ssh
+              cat > /root/.ssh/id_rsa << EOF
+              -----BEGIN OPENSSH PRIVATE KEY-----
+              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
+              -----END OPENSSH PRIVATE KEY-----
+              EOF
+              chmod 600  /root/.ssh/id_rsa 
+              ssh-keygen -y -f ~/.ssh/id_rsa > /root/.ssh/authorized_keys
+              chmod 600 /root/.ssh/authorized_keys
+              # END SETUP
+              # START PACKAGE INSTALLATION
+              yum install git -y
+              yum install docker -y
+              systemctl enable docker
+              systemctl start docker
+              # Hold files needed to serve
+              mkdir -p /tmp/images
+              # Clone our public repo into this machine to have files needed to serve and initialize git
+              git clone git@github.com:guezandy/e91FinalProject.git /tmp/images
+              cd /tmp/images && docker build -t centosapache .
+              docker run --name staging -d -p 80:80 centosapache
+            - ADMINUSERNAME: !Ref ADMINUserName
+              ADMINSSHKEY: !Ref ADMINPublicKey
+
+Outputs:
+  InstanceId:
+    Description: EC2 ID
+    Value: !Ref EC2Instance
+
+  LocalIP:
+    Description: Local Ip
+    Value: !GetAtt EC2Instance.PrivateIp
+
+  PublicIP:
+    Description: Public Ip
+    Value: !GetAtt EC2Instance.PublicIp
