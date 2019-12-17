@@ -1,3 +1,5 @@
+#! /bin/bash
+
 adduser e91user
 echo e91user 'ALL=(ALL) NOPASSWD:ALL'>>/etc/sudoers.d/e91user
 mkdir /home/e91user/.ssh
